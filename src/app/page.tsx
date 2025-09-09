@@ -32,7 +32,15 @@ export default function Home(){
   return(
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Stock Ticker</h1>
+        <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">Stock Ticker</h1>
+        <div className="text-center mb-8">
+          <a 
+            href="/demo" 
+            className="inline-block bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            View Demo Page →
+          </a>
+        </div>
         <StockCard 
           symbol="AAPL"
           stockData={stockData}

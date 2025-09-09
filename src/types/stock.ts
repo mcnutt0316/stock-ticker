@@ -61,7 +61,9 @@ export interface StockCardProps {
 export interface StockError {
   message: string;
   code?: string;
+  type?: 'network' | 'data' | 'critical' | 'api';
   retryable?: boolean;
+  details?: string;
 }
 
 // Loading state interface for skeleton display
