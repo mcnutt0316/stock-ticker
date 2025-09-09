@@ -38,7 +38,6 @@ export default function Home(){
           stockData={stockData}
           loading={loading}
           error={error}
-          variant="default"
         />
       </div>
     </div>

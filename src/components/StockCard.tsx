@@ -1,5 +1,6 @@
 import { StockCardProps, StockData, MarketStackResponse } from '@/types/stock';
 import { parseStockData } from '@/utils/stockDataParser';
+import styles from './StockCard.module.css';
 
 export default function StockCard({
   symbol,
@@ -14,12 +15,12 @@ export default function StockCard({
   // Handle loading state
   if (loading) {
     return (
-      <div className={`stock-card stock-card--loading ${className}`}>
-        <div className="stock-card__skeleton">
-          <div className="skeleton__header"></div>
-          <div className="skeleton__price"></div>
-          <div className="skeleton__change"></div>
-          <div className="skeleton__details"></div>
+      <div className={`${styles.stockCard} ${styles.loading} ${className}`}>
+        <div className={styles.skeleton}>
+          <div className={`${styles.skeletonItem} ${styles.skeletonHeader}`}></div>
+          <div className={`${styles.skeletonItem} ${styles.skeletonPrice}`}></div>
+          <div className={`${styles.skeletonItem} ${styles.skeletonChange}`}></div>
+          <div className={`${styles.skeletonItem} ${styles.skeletonDetails}`}></div>
         </div>
       </div>
     );
@@ -28,11 +29,11 @@ export default function StockCard({
   // Handle error state  
   if (error) {
     return (
-      <div className={`stock-card stock-card--error ${className}`}>
-        <div className="stock-card__error">
-          <div className="error__icon">⚠️</div>
-          <div className="error__message">{error}</div>
-          <button className="error__retry" onClick={() => window.location.reload()}>
+      <div className={`${styles.stockCard} ${className}`}>
+        <div className={styles.error}>
+          <div className={styles.errorIcon}>⚠️</div>
+          <div className={styles.errorMessage}>{error}</div>
+          <button className={styles.retryButton} onClick={() => window.location.reload()}>
             Retry
           </button>
         </div>
@@ -43,10 +44,10 @@ export default function StockCard({
   // Handle empty/no data state
   if (!stockData) {
     return (
-      <div className={`stock-card stock-card--empty ${className}`}>
-        <div className="stock-card__empty">
-          <div className="empty__icon">📊</div>
-          <div className="empty__message">No data available for {symbol}</div>
+      <div className={`${styles.stockCard} ${className}`}>
+        <div className={styles.empty}>
+          <div className={styles.emptyIcon}>📊</div>
+          <div className={styles.emptyMessage}>No data available for {symbol}</div>
         </div>
       </div>
     );
@@ -59,11 +60,11 @@ export default function StockCard({
   } catch (parseError) {
     console.error(`Failed to parse stock data for ${symbol}:`, parseError);
     return (
-      <div className={`stock-card stock-card--error ${className}`}>
-        <div className="stock-card__error">
-          <div className="error__icon">⚠️</div>
-          <div className="error__message">Failed to process data for {symbol}</div>
-          <button className="error__retry" onClick={() => window.location.reload()}>
+      <div className={`${styles.stockCard} ${className}`}>
+        <div className={styles.error}>
+          <div className={styles.errorIcon}>⚠️</div>
+          <div className={styles.errorMessage}>Failed to process data for {symbol}</div>
+          <button className={styles.retryButton} onClick={() => window.location.reload()}>
             Retry
           </button>
         </div>
@@ -71,73 +72,89 @@ export default function StockCard({
     );
   }
 
+  // Create variant class
+  const variantClass = variant === 'compact' ? styles.compact : variant === 'expanded' ? styles.expanded : '';
+
   return (
-    <div className={`stock-card stock-card--${variant} ${className}`}>
-      <div className="stock-card__header">
-        <div className="header__symbol">{normalizedData.symbol || symbol}</div>
-        {normalizedData.companyName && (
-          <div className="header__company">{normalizedData.companyName}</div>
-        )}
+    <div className={`${styles.stockCard} ${variantClass} ${className}`}>
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <div className={styles.symbol}>{normalizedData.symbol || symbol}</div>
+          {normalizedData.companyName && (
+            <div className={styles.companyName}>{normalizedData.companyName}</div>
+          )}
+        </div>
         {normalizedData.marketStatus && (
-          <div className={`header__status header__status--${normalizedData.marketStatus}`}>
+          <div className={`${styles.marketStatus} ${getMarketStatusClass(normalizedData.marketStatus)}`}>
             {normalizedData.marketStatus.replace('-', ' ')}
           </div>
         )}
       </div>
 
-      <div className="stock-card__price">
-        <div className="price__current">
+      <div className={styles.price}>
+        <div className={styles.currentPrice}>
           {normalizedData.currentPrice > 0 
             ? formatCurrency(normalizedData.currentPrice, normalizedData.currency)
             : 'N/A'
           }
         </div>
         {(normalizedData.change !== 0 || normalizedData.changePercent !== 0) && (
-          <div className={`price__change ${normalizedData.change >= 0 ? 'positive' : 'negative'}`}>
-            <span className="change__absolute">
+          <div className={`${styles.priceChange} ${normalizedData.change >= 0 ? styles.positive : styles.negative}`}>
+            <span className={styles.changeAbsolute}>
               {normalizedData.change >= 0 ? '+' : ''}{formatCurrency(Math.abs(normalizedData.change), normalizedData.currency)}
             </span>
-            <span className="change__percent">
+            <span className={styles.changePercent}>
               ({normalizedData.change >= 0 ? '+' : ''}{normalizedData.changePercent.toFixed(2)}%)
             </span>
           </div>
         )}
       </div>
 
-      <div className="stock-card__details">
-        <div className="details__row">
-          <span className="details__label">Open</span>
-          <span className="details__value">
+      <div className={styles.details}>
+        <div className={styles.detailsRow}>
+          <span className={styles.detailsLabel}>Open</span>
+          <span className={styles.detailsValue}>
             {normalizedData.open > 0 ? formatCurrency(normalizedData.open, normalizedData.currency) : 'N/A'}
           </span>
         </div>
-        <div className="details__row">
-          <span className="details__label">High</span>
-          <span className="details__value">
+        <div className={styles.detailsRow}>
+          <span className={styles.detailsLabel}>High</span>
+          <span className={styles.detailsValue}>
             {normalizedData.high > 0 ? formatCurrency(normalizedData.high, normalizedData.currency) : 'N/A'}
           </span>
         </div>
-        <div className="details__row">
-          <span className="details__label">Low</span>
-          <span className="details__value">
+        <div className={styles.detailsRow}>
+          <span className={styles.detailsLabel}>Low</span>
+          <span className={styles.detailsValue}>
             {normalizedData.low > 0 ? formatCurrency(normalizedData.low, normalizedData.currency) : 'N/A'}
           </span>
         </div>
-        <div className="details__row">
-          <span className="details__label">Volume</span>
-          <span className="details__value">
+        <div className={styles.detailsRow}>
+          <span className={styles.detailsLabel}>Volume</span>
+          <span className={styles.detailsValue}>
             {normalizedData.volume > 0 ? formatVolume(normalizedData.volume) : 'N/A'}
           </span>
         </div>
       </div>
 
-      <div className="stock-card__footer">
-        <div className="footer__updated">
+      <div className={styles.footer}>
+        <div className={styles.lastUpdated}>
           Updated: {formatLastUpdated(normalizedData.lastUpdated)}
         </div>
       </div>
     </div>
   );
+}
+
+// Helper function for market status CSS classes
+function getMarketStatusClass(status: string): string {
+  switch (status) {
+    case 'open': return styles.open;
+    case 'closed': return styles.closed;
+    case 'pre-market': return styles.preMarket;
+    case 'after-hours': return styles.afterHours;
+    default: return '';
+  }
 }
 
 // Helper functions for formatting (will be moved to utils in step 5)
